@@ -1,0 +1,5 @@
+praw
+feedparser
+beautifulsoup4
+html5lib
+python-dotenv
