@@ -36,5 +36,20 @@ def make_tokens(text):
         tokens.append('</s>')
     return tokens
 
-print(make_tokens(lines))
+def unigram(tokens):
+    count_dict = {}
+    for token in tokens:
+        count_dict[token] = count_dict.get(token, 0) + 1
+    return count_dict
+
+def bigram(tokens):
+    count_dict = {}
+    for i in range(len(tokens) -1):
+        gram = (tokens[i], tokens[i+1])
+        count_dict[gram] = count_dict.get(gram, 0) + 1
+    return count_dict
+
+tokens = make_tokens(lines)
+print(bigram(tokens))
+
 
