@@ -49,7 +49,43 @@ def bigram(tokens):
         count_dict[gram] = count_dict.get(gram, 0) + 1
     return count_dict
 
+
+class Prob:
+    def __init__(self, uni_count_dict, bi_count_dict):    
+        self.uni_count_size = 0
+        self.bi_count_size = 0
+        self.uni_count_dict = uni_count_dict
+        self.bi_count_dict = bi_count_dict
+
+    def compute_size_corpus(self):
+        for index in self.uni_count_dict:
+            self.uni_count_size += self.uni_count_dict[index]
+        for index in self.bi_count_dict:
+            self.bi_count_size += self.bi_count_dict[index]
+
+
+
+    def compute_unigram_prob(self, sentence):
+        self.compute_size_corpus()
+        cum_prob = 1 
+        for word in sentence.split():
+            if word in self.uni_count_dict:
+                prob = self.uni_count_dict[word] / self.uni_count_size 
+                cum_prob *= prob
+            else: 
+                cum_prob=0
+        return cum_prob
+
+
 tokens = make_tokens(lines)
-print(bigram(tokens))
+uni_count = unigram(tokens)
+bi_count = bigram(tokens)
+while True:
+    prob = Prob(uni_count, bi_count)  
+    sentence = input("Enter a sentence (or 'random', or 'done'): ").lower()
+    if sentence == "done": break
+    unigram_prob= prob.compute_unigram_prob(sentence)
+    print(f"Unigram prob: {unigram_prob}")
+
 
 
