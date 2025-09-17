@@ -51,7 +51,8 @@ def bigram(tokens):
 
 
 class Prob:
-    def __init__(self, uni_count_dict, bi_count_dict):    
+    def __init__(self, sentence, uni_count_dict, bi_count_dict):    
+        self.sentence = sentence
         self.uni_count_size = 0
         self.bi_count_size = 0
         self.uni_count_dict = uni_count_dict
@@ -65,10 +66,10 @@ class Prob:
 
 
 
-    def compute_unigram_prob(self, sentence):
+    def compute_unigram_prob(self):
         self.compute_size_corpus()
         cum_prob = 1 
-        for word in sentence.split():
+        for word in self.sentence.split():
             if word in self.uni_count_dict:
                 prob = self.uni_count_dict[word] / self.uni_count_size 
                 cum_prob *= prob
@@ -76,16 +77,33 @@ class Prob:
                 cum_prob=0
         return cum_prob
 
+    def compute_bigram_prob(self):
+        self.compute_size_corpus()
+        cum_prob = 1
+        sentence = self.sentence.split()
+        sentence_gram_list = []
+        for i in range(len(sentence) - 1):
+            gram = (sentence[i], sentence[i+1])
+            sentence_gram_list.append(gram)
+        for gram in sentence_gram_list:
+            if gram in self.bi_count_dict:
+                prob = self.bi_count_dict[gram] / self.bi_count_size
+                cum_prob *= prob
+            else:
+                cum_prob=0
+        return cum_prob
 
 tokens = make_tokens(lines)
 uni_count = unigram(tokens)
 bi_count = bigram(tokens)
 while True:
-    prob = Prob(uni_count, bi_count)  
     sentence = input("Enter a sentence (or 'random', or 'done'): ").lower()
+    prob = Prob(sentence, uni_count, bi_count)  
     if sentence == "done": break
-    unigram_prob= prob.compute_unigram_prob(sentence)
+    unigram_prob= prob.compute_unigram_prob()
+    bigram_prob = prob.compute_bigram_prob()
     print(f"Unigram prob: {unigram_prob}")
+    print(f"Bigram prob: {bigram_prob}")
 
 
 
