@@ -1,5 +1,5 @@
 import re
-
+import random
 
 
 corpus = input("Enter the path to your corpus: ")
@@ -57,6 +57,7 @@ class Prob:
         self.bi_count_size = 0
         self.uni_count_dict = uni_count_dict
         self.bi_count_dict = bi_count_dict
+        self.random_uni_sentence = []
 
     def compute_size_corpus(self):
         for index in self.uni_count_dict:
@@ -93,6 +94,19 @@ class Prob:
                 cum_prob=0
         return cum_prob
 
+    def generate_random_unigram_sentence(self, max_length=10):
+        sentence = ["<s>"]
+        vocab = [w for w in self.uni_count_dict if w != "<s>"]
+        weights = [self.uni_count_dict[w] for w in vocab]
+        for _ in range(0, max_length):
+            word = random.choices(vocab, weights=weights, k=1)[0]
+            sentence.append(word)
+            if word == "</s>":
+                break
+        barf = " "
+        self.random_uni_sentence = barf.join(sentence)
+
+
 tokens = make_tokens(lines)
 uni_count = unigram(tokens)
 bi_count = bigram(tokens)
@@ -100,6 +114,10 @@ while True:
     sentence = input("Enter a sentence (or 'random', or 'done'): ").lower()
     prob = Prob(sentence, uni_count, bi_count)  
     if sentence == "done": break
+    if sentence == "random":
+        prob.generate_random_unigram_sentence(10)
+        prob.sentence = prob.random_uni_sentence
+        print(f"Random unigram sentence: {prob.sentence}")
     unigram_prob= prob.compute_unigram_prob()
     bigram_prob = prob.compute_bigram_prob()
     print(f"Unigram prob: {unigram_prob}")
