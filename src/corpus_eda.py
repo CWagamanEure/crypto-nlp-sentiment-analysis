@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 # ---- INPUT (edit if needed) ----
-INPUT = Path("~/cpsc470/crypto-sentiment-corpus/data/processed/reddit_crypto_corpus_clean_min.csv").expanduser()
+INPUT = Path("~/cpsc470/crypto-sentiment-corpus/data/processed/reddit_crypto_yearly_corpus_clean_min.csv").expanduser()
 
 df = pd.read_csv(INPUT)
 
