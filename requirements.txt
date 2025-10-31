@@ -1,5 +1,12 @@
 praw
+spacy==3.7.2
 feedparser
 beautifulsoup4
 html5lib
 python-dotenv
+gensim==4.4.0
+pandas==2.2.2
+torch
+scipy==1.13.1
+thinc==8.2.2
+numpy==1.26.4
