@@ -17,7 +17,7 @@ def parse_sentences(inFilePath, outFilePath):
     text = Path(inFilePath).read_text(encoding="utf-8")
     nlp.max_length = len(text) + 10_000
     doc = nlp(text)
-    with open(outFilePath, "a", encoding="utf-8") as f:
+    with open(outFilePath, "w", encoding="utf-8") as f:
         for sent in doc.sents:
             f.write(f"{sent.text}")
 
@@ -58,8 +58,8 @@ def encoding(data, embeddings_path):
     encoded_train = [sentence_vector(sentence, embeds) for sentence in train]
     encoded_test = [sentence_vector(sentence, embeds) for sentence in test]
     return {
-        "train": encoded_train,
-        "test": encoded_test
+        "train": np.stack(encoded_train),
+        "test": np.stack(encoded_test)
     } 
 
 
@@ -73,9 +73,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.parse_sentences == "y":
         parse_sentences(args.inputPath, args.outputPath)
-    data = shuffle_and_split(args.outputPath)
+        data_source = args.outputPath
+    else: 
+        data_source = args.inputPath
+    data = shuffle_and_split(data_source)
     encodings = encoding(data, "../../data/embeddings/glove_embeddings.data")
-    torch.save(encodings, "../../data/processed/neural-stuff/encodings.pt")
+    torch.save(
+        {
+            "train": torch.from_numpy(encodings["train"]),
+            "test": torch.from_numpy(encodings["test"]),
+        },
+        "../../data/processed/neural-stuff/encodings.pt",
+    )
 
 
 
