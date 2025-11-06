@@ -2,21 +2,29 @@ import torch
 import numpy as np
 from gensim.models import KeyedVectors
 
-ENC_PATH   = "../../data/processed/neural-stuff/encodings.pt"
-MODEL_PATH = "../../data/processed/neural-stuff/simple_model.pt"
-EMB_PATH   = "../../data/embeddings/glove_embeddings.data"
+ENC_PATH   = "./encodings.pt"
+MODEL_PATH = "./simple_model.pt"
+EMB_PATH   = "./glove_embeddings.data"
 
 def sentence_vector(sentence, kv):
     tokens = sentence.split()
     vecs = [kv[w] for w in tokens if w in kv.key_to_index]
+    
+
     if not vecs:
         return np.zeros(kv.vector_size, dtype=np.float32)
     return np.mean(vecs, axis=0).astype(np.float32)
+
+
+
+
 
 def forward(X, params):
     b  = torch.ones(X.size(0), 1, dtype=X.dtype)
     Xb = torch.cat([X, b], dim=1)           
     h  = torch.tanh(Xb @ params["W1"].t())
+
+
     return h @ params["W2"].t()           
 
 if __name__ == "__main__":
@@ -29,7 +37,7 @@ if __name__ == "__main__":
 
     kv = KeyedVectors.load(EMB_PATH)
 
-    print("Interactive classifier. Type text and press Enter (type 'quit' to exit).")
+    print("Type text and press Enter(type 'quit' to exit).")
     print("Classes:", ", ".join(names))
     while True:
         s = input("> ").strip()

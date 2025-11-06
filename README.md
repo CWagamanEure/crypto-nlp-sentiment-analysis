@@ -1,18 +1,43 @@
 # IN PROGRESS: Semester Long Project for NLP class
 ## will be updated with all asignments
 
-
-## Repository Structure
+## How to run the custom neural network:
+### Requirements:
+```
+pip install -r requirements.txt
+```
+1. cd through src into the neural-net directory and run: 
+```
+python3 load_embeds.py
+```
+2. To prep your corpus run the following command pointing to
+your own corpora and custom labels in order:
+```
+python3 prep.py -a y \
+--corpora ./crypto-reddit-corpus.txt \
+./KendrickLamarCorpus.txt \
+./ipadgettCorpus-final.txt \
+--labels reddit_crypto kendrick Isaiahs_corpus \
+-o ./parsed_labels.txt
 
 ```
-.
-├── NGramProbAndGen.py     # Provide a corpus to type a sentence and receive 1-3 gram prob, Also generates grams from the corpus
-├── corpus_eda.py          # Quick stats/plots: tokens, vocab size, top n‑grams, lengths
-├── csv_to_text.py         # Convert one or more CSV files/columns into a plain‑text corpus
-├── reddit_cleaner.py      # Normalize & clean raw Reddit JSON/CSV into newline‑delimited text
-├── reddit_client.py       # Fetch posts/comments from Reddit API and save to CSV
-└── regex.py               # Script to take regex and test on corpus
+3. Then run the train.py script with optional parmaters:
+ - number of hidden dimensions: -H
+ - learning rate: -l
+ - number of training epochs: -e
+ ```
+python3 train.py -H 512 -l .2 -e 1000
 ```
+4. Then you can evaluate the model by running:
+```
+python3 eval.py
+```
+5. You can then interact with the model through:
+```
+python3 eval.py
+```
+
+
 ## Reddit-client CSV format:
 ```
 "platform": "reddit",

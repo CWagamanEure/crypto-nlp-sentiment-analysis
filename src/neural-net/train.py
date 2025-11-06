@@ -6,10 +6,6 @@ import torch.nn.functional as F
 
 
 def load_encoded_sentences(tensor_path, split="train"):
-    """
-    Load your saved encodings.pt and return (X, y, label2id) for a split.
-    split: "train" or "test"
-    """
     enc = torch.load(tensor_path, map_location="cpu") 
     X = enc[split]             
     y = enc[f"y_{split}"]       
@@ -35,14 +31,13 @@ def make_random_weights( input_dim, hidden_dim, num_classes,  seed=0):
 
 def forward(X, params: dict):
     '''
-    Bias just added as an extra column of 1s
+    Added the bias as 1s 
     '''
     bias = torch.ones(X.size(0), 1)
     X = torch.cat((X, bias), dim=1)
 
     W1 = params["W1"]; W2 = params["W2"]
 
-    # First hidden layer
     z1 = X @ W1.t()
     h1 = torch.tanh(z1)
     logits = h1 @ W2.t()
@@ -56,7 +51,7 @@ if __name__=="__main__":
     parser.add_argument("-e", "--epochs", default=500)
     args = parser.parse_args()
 
-    X, y, label2id = load_encoded_sentences("../../data/processed/neural-stuff/encodings.pt")
+    X, y, label2id = load_encoded_sentences("./encodings.pt")
     N, input_dim = X.shape
     num_classes = int(y.max().item() +1)
     hidden_dim = args.hidden_dim 
@@ -67,7 +62,7 @@ if __name__=="__main__":
 
     # Gradient Descent
     print("epoch  Loss    ret")
-    for epoch in range(1, epochs+1):
+    for epoch in range(1, int(epochs)+1):
         logits, _ = forward(X, params)
         loss = F.cross_entropy(logits, y)
 
@@ -83,7 +78,7 @@ if __name__=="__main__":
             print(epoch, loss.item(), ret)
 
 
-    ckpt_path = "../../data/processed/neural-stuff/simple_model.pt"
+    ckpt_path = "./simple_model.pt"
     torch.save({
         "params": {k: v.detach().cpu() for k, v in params.items()},  
         "input_dim": input_dim,

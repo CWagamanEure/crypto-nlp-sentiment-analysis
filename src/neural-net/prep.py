@@ -50,7 +50,7 @@ def shuffle_and_split(inFilePath):
 
 def sentence_vector(sentence, kv):
     """
-    Mean-pooled word vectors; OOV words skipped.
+    Mean-pooled word vectors
     """
     tokens = sentence.split()
     vecs = [kv[w] for w in tokens if w in kv.key_to_index]
@@ -61,7 +61,6 @@ def sentence_vector(sentence, kv):
 def encoding(data, embeddings_path):
     """
     Encodes train/test lists.
-    Supports labeled lines 'label\\ttext' and returns y arrays + label map.
     """
     def split_label_text(s):
         if "\t" in s:
@@ -106,19 +105,30 @@ if __name__ == "__main__":
     parser.add_argument("--labels", nargs="+", help="List of labels")
     parser.add_argument("-o", "--outputPath", required=True, help="Where to write parsed lines")
     parser.add_argument("-a", "--parse_sentences", choices=["y","n"], default="n")
+    parser.add_argument("-p", "--inputPath", help="Path to labeled or raw file")
     args = parser.parse_args()
 
     if args.parse_sentences == "y":
         if args.corpora and args.labels:
             parse_sentences_many(args.corpora, args.labels, args.outputPath)
-        data_source = args.outputPath
+            data_source = args.outputPath
+        elif args.inputPath:
+            parse_sentences(args.inputPath, args.outputPath, label=args.corpusLabel, append=False)
+            data_source = args.outputPath
+        else: raise SystemExit("need to give corpora and labels or just -p with -a y")
+
     else:
-        data_source = args.inputPath
+        if args.inputPath:
+            data_source = args.inputPath
+        elif args.corpora:
+            data_source = args.corpora[0]
+        else: 
+            raise SystemExit("need -p or corpora file with -a n")
 
 
 
     data = shuffle_and_split(data_source)
-    enc = encoding(data, "../../data/embeddings/glove_embeddings.data")
+    enc = encoding(data, "./glove_embeddings.data")
 
     torch.save(
         {
@@ -128,6 +138,6 @@ if __name__ == "__main__":
             "y_test": torch.from_numpy(enc["y_test"]),
             "label2id": enc["label2id"],
         },
-        "../../data/processed/neural-stuff/encodings.pt",
+        "./encodings.pt",
     )
 
