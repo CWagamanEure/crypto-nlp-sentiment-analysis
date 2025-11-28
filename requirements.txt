@@ -1,4 +1,5 @@
 praw
+transformers
 spacy==3.7.2
 feedparser
 beautifulsoup4
